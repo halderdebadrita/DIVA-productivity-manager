@@ -33,7 +33,7 @@ To reset demo data: **Settings → Integrations → Reset demo data**.
 5. **Scheduler**: set `CRON_SECRET`, then pick one of these:
    - **GitHub Actions** (free, every 30 min): `.github/workflows/reminders.yml`. Add the repo secrets `DIVA_URL` and `CRON_SECRET`.
    - **Supabase pg_cron**: edit and run `supabase/cron.sql`.
-   - **Vercel Cron**: `vercel.json` is included. The Hobby plan only allows daily crons, so use Pro or one of the options above for timely reminders.
+   - **Vercel Cron**: `vercel.json` runs the job once a day (08:00 IST), which the Hobby plan allows. On Pro you can change it to `*/30 * * * *`.
    - **Manually**: run `npm run reminders`, or use **Settings → Email delivery → Process due now**.
 6. Set `APP_URL` to your deployed URL so links in emails point to Diva.
 7. Restart, open `/login` and create your account. Your timezone is set in Settings (default Asia/Kolkata).

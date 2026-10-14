@@ -1,0 +1,20 @@
+# Runs Diva's reminder job every 30 minutes (Vercel Hobby only allows a daily cron).
+# Repo secrets: DIVA_URL (e.g. https://diva.vercel.app) and CRON_SECRET.
+name: reminders
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger reminder job
+        env:
+          DIVA_URL: ${{ secrets.DIVA_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$DIVA_URL" ] || [ -z "$CRON_SECRET" ]; then echo "DIVA_URL / CRON_SECRET not set, skipping"; exit 0; fi
+          curl -fsS --max-time 60 -H "Authorization: Bearer $CRON_SECRET" "$DIVA_URL/api/cron/reminders"
