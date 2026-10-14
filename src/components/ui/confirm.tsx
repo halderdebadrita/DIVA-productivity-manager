@@ -4,13 +4,19 @@ import { useState } from "react";
 import { Button } from "./button";
 
 export function Confirm({
-  trigger, title, description, confirmLabel = "Delete", onConfirm,
-}: { trigger: React.ReactNode; title: string; description: string; confirmLabel?: string; onConfirm: () => Promise<unknown> | unknown }) {
+  trigger, title, description, confirmLabel = "Delete", onConfirm, open: controlledOpen, onOpenChange,
+}: {
+  trigger?: React.ReactNode; title: string; description: string; confirmLabel?: string; onConfirm: () => Promise<unknown> | unknown;
+  /** Controlled mode, for opening the dialog from somewhere other than a trigger (e.g. a context menu). */
+  open?: boolean; onOpenChange?: (open: boolean) => void;
+}) {
   const [busy, setBusy] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [ownOpen, setOwnOpen] = useState(false);
+  const open = controlledOpen ?? ownOpen;
+  const setOpen = onOpenChange ?? setOwnOpen;
   return (
     <A.Root open={open} onOpenChange={setOpen}>
-      <A.Trigger asChild>{trigger}</A.Trigger>
+      {trigger && <A.Trigger asChild>{trigger}</A.Trigger>}
       <A.Portal>
         <A.Overlay className="fixed inset-0 z-[60] bg-black/60" />
         <A.Content className="fixed left-1/2 top-1/2 z-[60] w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface p-5 shadow-2xl">

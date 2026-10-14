@@ -1,5 +1,5 @@
 import { getCtx } from "@/lib/context";
-import { effectiveProgress, listMilestones, listProjects, nextMilestone } from "@/lib/services/projects";
+import { effectiveProgress, listMilestones, listProjects, nextMilestone, pinnedProjectIds } from "@/lib/services/projects";
 import type { GithubSnapshot } from "@/lib/types";
 import { PageHeader } from "@/components/ui/bits";
 import { ProjectFormDialog } from "@/components/projects/project-form";
@@ -24,7 +24,7 @@ export default async function ProjectsPage() {
     <div>
       <PageHeader title="Projects" description="Your personal project tracker — progress, milestones, GitHub and demos in one workspace each." actions={<><QuickLinkButton k="github" label="My GitHub" /><QuickLinkButton k="claude_code" /><GithubImport /><ProjectFormDialog /></>} />
       <GithubAutoRefresh />
-      <ProjectsGrid projects={data} />
+      <ProjectsGrid projects={data} pinned={pinnedProjectIds(ctx)} />
     </div>
   );
 }

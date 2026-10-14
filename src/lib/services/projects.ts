@@ -57,14 +57,26 @@ export async function deleteProject(ctx: Ctx, id: string) {
   await ctx.db.remove("projects", { eq: { id, user_id: ctx.userId } });
   await syncEntityReminders(ctx, "project", id);
   for (const m of ms) await syncEntityReminders(ctx, "milestone", m.id);
-  // don't let GitHub auto-import bring a deleted repo back
+  // unpin it, and don't let GitHub auto-import bring a deleted repo back
+  const prefs = ctx.profile.preferences ?? {};
+  const pinned = pinnedProjectIds(ctx);
   const repo = parseRepo(project?.repo_url);
-  if (repo) {
-    const prefs = ctx.profile.preferences ?? {};
+  if (repo || pinned.includes(id)) {
     const ignored = new Set((prefs.github_ignored_repos as string[] | undefined) ?? []);
-    ignored.add(repo);
-    await ctx.db.update("profiles", { eq: { id: ctx.userId } }, { preferences: { ...prefs, github_ignored_repos: [...ignored] } });
+    if (repo) ignored.add(repo);
+    await ctx.db.update("profiles", { eq: { id: ctx.userId } }, { preferences: { ...prefs, github_ignored_repos: [...ignored], pinned_projects: pinned.filter((p) => p !== id) } });
   }
+}
+
+/** Pinned project ids, most recently pinned first. Kept in profile preferences. */
+export const pinnedProjectIds = (ctx: Ctx) => (ctx.profile.preferences?.pinned_projects as string[] | undefined) ?? [];
+
+export async function setProjectPinned(ctx: Ctx, id: string, pinned: boolean) {
+  if (!(await getProject(ctx, id))) throw new Error("Project not found");
+  const rest = pinnedProjectIds(ctx).filter((p) => p !== id);
+  const next = pinned ? [id, ...rest] : rest;
+  await ctx.db.update("profiles", { eq: { id: ctx.userId } }, { preferences: { ...(ctx.profile.preferences ?? {}), pinned_projects: next } });
+  return next;
 }
 
 export async function createMilestone(ctx: Ctx, projectId: string, input: Record<string, unknown>) {

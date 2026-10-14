@@ -5,7 +5,7 @@ import {
 } from "@/lib/validation";
 import { createTest, deleteTest, updateTest } from "@/lib/services/tests";
 import {
-  createMilestone, createProject, deleteMilestone, deleteProject, updateMilestone, updateProject,
+  createMilestone, createProject, deleteMilestone, deleteProject, setProjectPinned, updateMilestone, updateProject,
 } from "@/lib/services/projects";
 import { createHackathon, deleteHackathon, updateHackathon } from "@/lib/services/hackathons";
 import { analyzeProject, autoRefresh, importRepos, myRepos, remainingToMilestones, syncGithub } from "@/lib/services/github";
@@ -50,6 +50,9 @@ export async function patchProjectAction(id: string, raw: unknown) {
 }
 export async function deleteProjectAction(id: string) {
   return run((ctx) => deleteProject(ctx, id));
+}
+export async function pinProjectAction(id: string, pinned: boolean) {
+  return run((ctx) => setProjectPinned(ctx, id, z.boolean().parse(pinned)));
 }
 export async function saveMilestoneAction(projectId: string, id: string | null, raw: unknown) {
   return run(async (ctx) => {
