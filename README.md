@@ -1,5 +1,7 @@
 # Diva — personal productivity command centre (V0)
 
+**Live demo:** https://diva-productivity-manager.vercel.app
+
 Diva answers four questions every time you open it: **what do I need to do today, what's coming up, where do my projects and commitments stand, and what productive thing can I do next?**
 
 Built with Next.js 15 (App Router) · TypeScript · Tailwind · Radix/shadcn-style components · Lucide · Recharts · Supabase (Auth, Postgres, Storage) · Anthropic/OpenAI API · Resend.
